@@ -17,8 +17,4 @@ export class TaskEntity {
     updatedAt: Date;
     @Column({nullable:true})
     createdBy: string;
-
-    constructor(){
-        
-    }
 }
