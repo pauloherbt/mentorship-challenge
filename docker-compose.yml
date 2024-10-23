@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:latest # Versão do PostgreSQL que você deseja usar
+    container_name: postgres_container
+    environment:
+      POSTGRES_USER: ${DB_USER}       # Nome do usuário
+      POSTGRES_PASSWORD: ${DB_PASSWORD} # Senha do usuário
+      POSTGRES_DB: ${DB_NAME}    # Nome do banco de dados
+    ports:
+      - ${DB_PORT}-${DB_PORT}           # Porta que será mapeada no host
+    volumes:
+      - postgres-data: /var/lib/postgresql/data  # Persistência de dados
+    
+volumes:
+  postgres-data:                  # Volume para persistir dados

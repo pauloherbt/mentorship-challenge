@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
-import { TaskController } from '../infra/controllers/task.controller';
-import { TaskService } from '../domain/services/task.service';
+import { ConfigModule } from '@nestjs/config';
 import { TaskModule } from './task.module';
 
 @Module({
-  imports: [TaskModule],
+  imports: [ConfigModule.forRoot({
+    isGlobal:true,
+    cache:true,
+  }),TaskModule],
 })
 export class AppModule { }
