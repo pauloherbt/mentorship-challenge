@@ -1,6 +1,6 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { TaskModel } from '../models/task';
-import { ObjectLiteral, Repository } from 'typeorm';
+import { Entity, ObjectLiteral, Repository } from 'typeorm';
 import { TaskEntity } from '../entities/task.entity';
 import { TaskStatus } from '../enums/task-status';
 
@@ -39,8 +39,17 @@ export class TaskService {
     return (await this.taskRepository.insert(task)).identifiers[0];
   }
 
-  async update(id:string,task:TaskModel){
+  async update(id:string,task:TaskModel):Promise<void>{
+    if(!await this.taskRepository.existsBy({id})){
+      throw new NotFoundException(`Task with id ${id} not found`);
+    }
     await this.taskRepository.update({id},task);
   }
 
+  async delete(id:string):Promise<void>{
+    if(!await this.taskRepository.existsBy({id})){
+      throw new NotFoundException(`Task with id ${id} not found`);
+    }
+    await this.taskRepository.delete({id});
+  }
 }

@@ -9,7 +9,7 @@ services:
     ports:
       - ${DB_PORT}-${DB_PORT}           # Porta que será mapeada no host
     volumes:
-      - postgres-data: /var/lib/postgresql/data  # Persistência de dados
+      - postgres-data:/var/lib/postgresql/data  # Persistência de dados
     
 volumes:
   postgres-data:                  # Volume para persistir dados
