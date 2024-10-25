@@ -7,9 +7,33 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD} # Senha do usuário
       POSTGRES_DB: ${DB_NAME}    # Nome do banco de dados
     ports:
-      - ${DB_PORT}-${DB_PORT}           # Porta que será mapeada no host
+      - ${DB_PORT}:${DB_PORT}
+    networks: 
+      - backend           # Porta que será mapeada no host
     volumes:
       - postgres-data:/var/lib/postgresql/data  # Persistência de dados
+
+  api:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: api
+    ports:
+      - ${API_PORT}:${API_PORT}
+    environment:
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DB_HOST: postgres # container name
+      DB_PORT: ${DB_PORT}
+      API_PORT: ${API_PORT}
+    networks: 
+      - backend
+    depends_on:
+      - postgres
     
 volumes:
-  postgres-data:                  # Volume para persistir dados
+  postgres-data:
+networks:
+  backend:
+    driver: bridge
