@@ -1,8 +1,8 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { TaskModel } from '../models/task';
-import { Entity, ObjectLiteral, Repository } from 'typeorm';
-import { TaskEntity } from '../entities/task.entity';
-import { TaskStatus } from '../enums/task-status';
+import { ObjectLiteral, Repository } from 'typeorm';
+import { TaskEntity} from '../entities/task.entity';
+import { FilterOperator, paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
 
 @Injectable()
 export class TaskService {
@@ -11,28 +11,24 @@ export class TaskService {
     @Inject('TASK_REPOSITORY')
     private taskRepository:Repository<TaskEntity>){}
   
-  private convertTaskEntityToTaskModel(task:TaskEntity):TaskModel{
-    return {
-      id:task.id,
-      title:task.title,
-      description:task.description,
-      status: task.status,
-      created_At:task.createdAt,
-      updated_At: task.updatedAt
-    };
+  async getAll(query:PaginateQuery): Promise<Paginated<TaskEntity>> {
+    return await paginate(query,this.taskRepository,{
+      sortableColumns: ['status'],
+      defaultSortBy:[['status','ASC']],
+      maxLimit:15,
+      filterableColumns:{
+        'status':[FilterOperator.EQ]
+      },
+      relativePath:true,
+    })
   }
 
-  async getAll(): Promise<TaskModel[]> {
-    const tasks = await this.taskRepository.find();
-    return tasks.map(this.convertTaskEntityToTaskModel);
-  }
-
-  async getById(id:string):Promise<TaskModel | {} >  {
+  async getById(id:string):Promise<TaskEntity | {} >  {
     const taskData = await this.taskRepository.findOne({where:{id}});
     if(!taskData){
       return {};
     }
-    return this.convertTaskEntityToTaskModel(taskData);
+    return taskData;
   }
 
   async create(task:TaskModel):Promise<ObjectLiteral>{

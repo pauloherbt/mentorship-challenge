@@ -1,5 +1,6 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { TaskStatus } from '../enums/task-status';
+import { UserEntity } from './user.entity';
 
 @Entity({name:'tasks'})
 export class TaskEntity {
@@ -15,6 +16,7 @@ export class TaskEntity {
     createdAt: Date;
     @UpdateDateColumn()
     updatedAt: Date;
-    @Column({nullable:true})
-    createdBy: string;
+    @ManyToOne(() => UserEntity, user => user.tasks)
+    @JoinColumn({ name: 'createdBy' })
+    createdBy: UserEntity;
 }

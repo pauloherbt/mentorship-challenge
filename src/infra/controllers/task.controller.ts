@@ -1,5 +1,7 @@
-import { BadRequestException, Body, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, Post, Put, Res } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, Post, Put, Query, Res } from '@nestjs/common';
 import { Response } from 'express';
+import { Paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
+import { TaskEntity } from 'src/domain/entities/task.entity';
 import { TaskStatus } from 'src/domain/enums/task-status';
 import { TaskModel } from 'src/domain/models/task';
 import { TaskService } from 'src/domain/services/task.service';
@@ -11,8 +13,8 @@ export class TaskController {
   constructor(private readonly taskService: TaskService) { }
 
   @Get()
-  getAll(): Promise<TaskModel[]> {
-    return this.taskService.getAll();
+  getAll(@Paginate() query:PaginateQuery): Promise<Paginated<TaskEntity>> {
+    return this.taskService.getAll(query);
   }
 
   @Get(':id')
