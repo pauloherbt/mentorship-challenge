@@ -1,10 +1,10 @@
-import { BadRequestException, Body, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, Post, Put, Query, Res } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, HttpStatus, NotFoundException, Param, Post, Put, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { Paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
-import { TaskEntity } from 'src/domain/entities/task.entity';
-import { TaskStatus } from 'src/domain/enums/task-status';
-import { TaskModel } from 'src/domain/models/task';
-import { TaskService } from 'src/domain/services/task.service';
+import { TaskEntity } from '../../domain/entities/task.entity';
+import { TaskStatus } from '../../domain/enums/task-status';
+import { TaskModel } from '../../domain/models/task';
+import { TaskService } from '../../domain/services/task.service';
 import { z } from 'zod';
 
 @Controller("/tasks")
@@ -18,7 +18,7 @@ export class TaskController {
   }
 
   @Get(':id')
-  async getById(@Param('id') id: string) {
+  async getById(@Param('id') id: string): Promise<TaskEntity | {} | { error: string }> {
     try {
       return await this.taskService.getById(id);
     }
@@ -31,8 +31,8 @@ export class TaskController {
 
   private validateInput(input: TaskModel): TaskModel {
     const object = z.object({
-      title: z.string(),
-      description: z.string(),
+      title: z.string().min(1),
+      description: z.string().min(1),
       status: z.nativeEnum(TaskStatus)
     });
     const result = object.safeParse(input);
@@ -43,7 +43,7 @@ export class TaskController {
   }
 
   @Post()
-  async create(@Body() input: TaskModel, @Res() res: Response) {
+  async create(@Body() input: TaskModel, @Res() res: Response):Promise<Response<any, Record<string, any>>> {
     try {
       const task = this.validateInput(input);
       const result = await this.taskService.create(task);

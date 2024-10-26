@@ -1,4 +1,4 @@
-import { TaskEntity } from "src/domain/entities/task.entity";
+import { TaskEntity } from "../domain/entities/task.entity";
 import { DataSource } from "typeorm";
 
 export const taskProviders = [
