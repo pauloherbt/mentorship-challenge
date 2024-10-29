@@ -1,12 +1,13 @@
 import { Test } from "@nestjs/testing";
 import { TaskService } from "../../../src/domain/services/task.service";
-import { InsertResult, Repository } from "typeorm";
+import { DeleteResult, InsertResult, Repository, UpdateResult } from "typeorm";
 import { faker } from "@faker-js/faker";
 import { NotFoundException } from "@nestjs/common";
 import { paginate, PaginateQuery } from "nestjs-paginate";
 import { TaskEntity } from "../../../src/domain/entities/task.entity";
 import { UserEntity } from "../../../src/domain/entities/user.entity";
 import { TaskStatus } from "../../../src/domain/enums/task-status";
+import exp from "constants";
 
 jest.mock('nestjs-paginate', () => {
   return {
@@ -106,6 +107,24 @@ describe('TaskService', () => {
       expect(spy).toHaveBeenCalledWith({ id });
       expect(spyUpdate).not.toHaveBeenCalled();
     })
+    it('should update a task', async () => {
+      const id = mockTask.id;
+      const task = {
+        title: 'new title',
+        description: mockTask.description,
+        status: mockTask.status
+      }
+      const repositoryOutput: UpdateResult = {
+        raw: [],
+        generatedMaps: [],
+        affected: 1
+      }
+      jest.spyOn(repository,'existsBy').mockResolvedValue(true);
+      const spy = jest.spyOn(repository, 'update').mockResolvedValue(repositoryOutput);
+      await service.update(id, task);
+      expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledWith({ id }, task);
+    })
   })
 
   describe('delete', () => {
@@ -117,6 +136,17 @@ describe('TaskService', () => {
       expect(spy).toHaveBeenCalled();
       expect(spy).toHaveBeenCalledWith({ id });
       expect(spyDel).not.toHaveBeenCalled();
+    })
+    it('should delete a task', async () => {
+      const id = mockTask.id;
+      const repositoryOutput: DeleteResult = {
+        raw: [],
+        affected: 1
+      }
+      jest.spyOn(repository,'existsBy').mockResolvedValue(true);
+      const spy = jest.spyOn(repository, 'delete').mockResolvedValue(repositoryOutput);
+      await expect(service.delete(id)).resolves.not.toThrow();
+      expect(spy).toHaveBeenCalledTimes(1);
     })
   })
   describe('getAll', () => {

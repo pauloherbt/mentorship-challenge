@@ -19,14 +19,11 @@ export class TaskController {
 
   @Get(':id')
   async getById(@Param('id') id: string): Promise<TaskEntity | {} | { error: string }> {
-    try {
-      return await this.taskService.getById(id);
-    }
-    catch (error) {
-      return {
-        error: error.message
+      const inputSchema = z.string().uuid().safeParse(id);
+      if (inputSchema.error) {
+        throw new BadRequestException({error:inputSchema.error.format()});
       }
-    }
+      return await this.taskService.getById(id);
   }
 
   private validateInput(input: TaskModel): TaskModel {

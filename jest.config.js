@@ -10,7 +10,7 @@ module.exports = {
       "^.+\\.ts$": "ts-jest"
     },
     "collectCoverageFrom": [
-      "**/**.(controller|service|entity).(t|j)s",
+      "**/**.(controller|service).(t|j)s",
       "!dist/**",
       "!**/node_modules/**",
     ],
