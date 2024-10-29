@@ -3,9 +3,12 @@ import { ConfigModule } from '@nestjs/config';
 import { TaskModule } from './task.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({
-    isGlobal:true,
-    cache:true,
-  }),TaskModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      cache: true,
+    }),
+    TaskModule,
+  ],
 })
-export class AppModule { }
+export class AppModule {}
